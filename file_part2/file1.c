@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-void caricaStudente (FILE* file);
+#define MAX_STUDENTI 10
+
+void caricaStudente ();
 void inserisciStudente ();
 void stampaStudente ();
 void eliminaStudente (int index);
-void salvaStudente (FILE* file);
+void salvaStudente ();
 
 struct Studente {
     char nome[30];
@@ -14,11 +16,10 @@ struct Studente {
     int anni;
 };
 
-struct Studente studente[10];
+struct Studente studente[MAX_STUDENTI];
+int num_studenti = 0;
 
 int main(int argc, char* argv[]) {
-    FILE* file_r;
-    FILE* file_w;
     int opzione, index;
 
     while (1) {
@@ -28,7 +29,7 @@ int main(int argc, char* argv[]) {
 
         switch(opzione) {
             case 1:
-                caricaStudente(file_r);
+                caricaStudente();
                 break;
             case 2:
                 inserisciStudente();
@@ -42,7 +43,7 @@ int main(int argc, char* argv[]) {
                 eliminaStudente(index);
                 break;
             case 5:
-                salvaStudente(file_w);
+                salvaStudente();
                 break;
             case 6:
                 return 0;
@@ -51,15 +52,10 @@ int main(int argc, char* argv[]) {
                 break;
         }
     }
-
-    if (file_w == NULL) {
-        fprintf(stderr, "Impossibile aprire il file\n");
-        exit(1);
-    }
 }
 
-void caricaStudente (FILE* file) {
-    file = fopen("studenti.txt", "r");
+void caricaStudente () {
+    FILE* file = fopen("studenti.txt", "r");
 
     if (file == NULL) {
         fprintf(stderr, "Impossibile aprire il file\n");
@@ -71,37 +67,45 @@ void caricaStudente (FILE* file) {
 
     fscanf(file, "%d", &num);
     
-    for (int i = 0; i < num; ++i) {
+    for (int i = 0; (i < num) && (num_studenti < MAX_STUDENTI); ++i) {
         fscanf(file, "%s", &nome);
         fscanf(file, "%s", &cognome);
         fscanf(file, "%d", &anni);
         strcpy(studente[i].nome, nome);
         strcpy(studente[i].cognome, cognome);
         studente[i].anni = anni;
+        num_studenti++;
     }
 
     fclose(file);
+    printf("%d studenti caricati dal file.\n", num_studenti);
 }
 
 void inserisciStudente () {
+    if (num_studenti >= MAX_STUDENTI) {
+        printf("Archivio pieno. Impossibile inserire nuovi studenti.\n");
+        return;
+    }
+
     char nome[30], cognome[30];
     int anni;
 
-    for (int i = 0; i < 10; ++i) {
-        printf("\nInserisci nome: ");
-        scanf("%29s", &nome);
-        strcpy(studente[i].nome, nome);
-        printf("\nInserisci cognome: ");
-        scanf("%29s", &cognome);
-        strcpy(studente[i].cognome, cognome);
-        printf("\nInserisci anni: ");
-        scanf("%d", &anni);
-        studente[i].anni = anni;
-    }
+    printf("\nInserisci nome: ");
+    scanf("%29s", &nome);
+    strcpy(studente[num_studenti].nome, nome);
+    printf("\nInserisci cognome: ");
+    scanf("%29s", &cognome);
+    strcpy(studente[num_studenti].cognome, cognome);
+    printf("\nInserisci anni: ");
+    scanf("%d", &anni);
+    studente[num_studenti].anni = anni;
+
+    num_studenti++;
+    printf("Studente inserito con successo.\n");
 }
 
 void stampaStudente () {
-    for (int i = 0; i < (sizeof(studente) / sizeof(studente[0])); ++i) {
+    for (int i = 0; i < num_studenti; ++i) {
         printf("Nome: %s ", studente[i].nome);
         printf("Cognome: %s ", studente[i].cognome);
         printf("Anni: %d\n", studente[i].anni);
@@ -109,32 +113,40 @@ void stampaStudente () {
 }
 
 void eliminaStudente (int index) {
-    int last_index = sizeof(studente)-1;
+    if (index < 0 || index >= num_studenti) {
+        printf("Indice non valido. Inserire un valore tra 0 e %d.\n", num_studenti - 1);
+        return;
+    }
 
-    strcpy(studente[index].nome , studente[last_index].nome);
+    for (int i = index; i < num_studenti - 1; i++) {
+        studente[i] = studente[i + 1];
+    }
+
+    num_studenti--;
+
+    printf("Studente all'indice %d eliminato con successo.\n", index);
+
+    /* strcpy(studente[index].nome , studente[last_index].nome);
     strcpy(studente[index].cognome, studente[last_index].cognome);
-    studente[index].anni = studente[last_index].anni;
-
-    studente[last_index].nome;
-    studente[last_index].nome;
-    studente[last_index].nome;
+    studente[index].anni = studente[last_index].anni; */
 }
 
-void salvaStudente (FILE* file) {
-    file = fopen("studenti.txt", "w");
+void salvaStudente () {
+    FILE* file = fopen("studenti.txt", "w");
 
     if (file == NULL) {
         fprintf(stderr, "Impossibile aprire il file\n");
         exit(1);
     }
 
-    fprintf(file, "%d\n", (sizeof(studente) / sizeof(studente[0])));
+    fprintf(file, "%d\n", num_studenti);
 
-    for (int i = 0; i < (sizeof(studente) / sizeof(studente[0])); ++i) {
+    for (int i = 0; i < num_studenti; ++i) {
         fprintf(file, "%s ", studente[i].nome);
         fprintf(file, "%s ", studente[i].cognome);
         fprintf(file, "%d\n", studente[i].anni);
     }
 
     fclose(file);
+    printf("Elenco di %d studenti salvato su file.\n", num_studenti);
 }
