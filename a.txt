@@ -1,0 +1,15 @@
+bool saveToFile(struct studente [], int nStud, const char []); ---> arr, numero studenti, nome file
+
+int loadFromFile(struct studente [], const char [] ); (restituisce -1 in caso di errore, numero di studenti letti in caso contrario)
+
+void showStudent(struct studente [], int nStud, int index);
+
+void showAllStudents(struct studente [], int nStud);
+
+int searchByName(struct studente [], int nStud, const char [] ); (restituisce -1 se non trovato,  l'indice del primo studente trovato con il nome ricercato);
+
+int deleteStudent(struct studente [], int nStud, int index); (restituisce il numero di studenti);
+
+int deleteStudentsByName(struct studente [], int nStud, const char []); (restituisce il numero di studenti);
+
+int addStudent(struct studente [], struct stud);

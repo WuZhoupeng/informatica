@@ -8,12 +8,14 @@ void caricaStudente ();
 void inserisciStudente ();
 void stampaStudente ();
 void eliminaStudente (int index);
+void eliminaStudenteFlag (int index);
 void salvaStudente ();
 
 struct Studente {
     char nome[30];
     char cognome[30];
     int anni;
+    int exist = 1;
 };
 
 struct Studente studente[MAX_STUDENTI];
@@ -83,7 +85,7 @@ void caricaStudente () {
 
 void inserisciStudente () {
     if (num_studenti >= MAX_STUDENTI) {
-        printf("Archivio pieno. Impossibile inserire nuovi studenti.\n");
+        printf("Array pieno. Impossibile inserire nuovi studenti.\n");
         return;
     }
 
@@ -106,9 +108,11 @@ void inserisciStudente () {
 
 void stampaStudente () {
     for (int i = 0; i < num_studenti; ++i) {
-        printf("Nome: %s ", studente[i].nome);
-        printf("Cognome: %s ", studente[i].cognome);
-        printf("Anni: %d\n", studente[i].anni);
+        if (studente[i].exist == 1) {
+            printf("Nome: %s ", studente[i].nome);
+            printf("Cognome: %s ", studente[i].cognome);
+            printf("Anni: %d\n", studente[i].anni);
+        }
     }
 }
 
@@ -124,11 +128,16 @@ void eliminaStudente (int index) {
 
     num_studenti--;
 
-    printf("Studente all'indice %d eliminato con successo.\n", index);
+    printf("Studente all'indice %d eliminato con successo.\nL'array ora ha %d elementi\n", index, num_studenti);
+}
 
-    /* strcpy(studente[index].nome , studente[last_index].nome);
-    strcpy(studente[index].cognome, studente[last_index].cognome);
-    studente[index].anni = studente[last_index].anni; */
+void eliminaStudenteFlag (int index) {
+    if (index < 0 || index >= num_studenti) {
+        printf("Indice non valido. Inserire un valore tra 0 e %d.\n", num_studenti - 1);
+        return;
+    }
+
+    studente[index].exist = 0;
 }
 
 void salvaStudente () {
