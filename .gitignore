@@ -1,1 +1,4 @@
 txt
+**/*.out
+!teoria-esercitazione/c_generale/01.out
+*.zip
