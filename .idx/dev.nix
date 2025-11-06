@@ -6,7 +6,9 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [
     pkgs.tinycc
+    pkgs.gdb
     pkgs.zip
+    pkgs.clang-tools
     # pkgs.go
     # pkgs.python311
     # pkgs.python311Packages.pip
@@ -20,6 +22,13 @@
     extensions = [
       # "vscodevim.vim"
       "google.gemini-cli-vscode-ide-companion"
+      
+      "ms-vscode-cpptools"
+      "llvm-vs-code-extensions.vscode-clangd"
+
+      "FelixIcaza.andromeda" # Theme
+      
+      "PKief.material-icon-theme"
     ];
     # Enable previews
     previews = {
