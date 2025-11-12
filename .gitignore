@@ -1,4 +1,6 @@
 txt
+COMPITI/**/*.txt
 **/*.out
+**/main
 !teoria-esercitazione/c_generale/01.out
 *.zip
