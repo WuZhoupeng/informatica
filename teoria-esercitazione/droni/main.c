@@ -11,8 +11,8 @@ struct Drone {
 };
 
 void create (struct Drone** lista_drone, struct Drone* d);
-void read (struct Drone** lista_drone);
-bool update_pos(struct Drone** lista_drone, size_t id_drone, char* new_pos);
+void read (struct Drone* lista_drone);
+bool update_pos(struct Drone* lista_drone, size_t id_drone, char* new_pos);
 
 int main() {
     int opzione, temp;
@@ -37,11 +37,16 @@ int main() {
                 printf("\nInserisci la posizione del drone: ");
                 scanf("%99s", pos_drone);
 
+                temp_drone->id = id_drone;
+                temp_drone->battery = battery_drone;
+                strcpy(temp_drone->pos, pos_drone);
+                temp_drone->next = NULL;
+
                 create(&start, temp_drone);
 
                 break;
             case 2:
-                read(&start);
+                read(start);
 
                 break;
             default:
@@ -53,7 +58,7 @@ int main() {
 }
 
 void create (struct Drone** lista_drone, struct Drone* d) {
-    if (lista_drone == NULL) {
+    if (*lista_drone == NULL) {
         *lista_drone = d;
 
         return;
@@ -69,24 +74,29 @@ void create (struct Drone** lista_drone, struct Drone* d) {
     }
 }
 
-void read (struct Drone** lista_drone) {
-    printf("%p", lista_drone);
+void read (struct Drone* lista_drone) {
     if (lista_drone == NULL) return;
 
-    printf("ID: %zu Battery: %zu Posizione: %s", (*lista_drone)->id, (*lista_drone)->battery, (*lista_drone)->pos);
+    struct Drone* temp = lista_drone;
 
-    read(&(*lista_drone)->next);
+    while (temp != NULL) {
+        printf("ID: %zu Battery: %zu Posizione: %s", (temp)->id, (temp)->battery, (temp)->pos);
+        temp = temp->next;
+    }
 }
 
-bool update_pos(struct Drone** lista_drone, size_t id_drone, char* new_pos) {
-    if (lista_drone == NULL) {
-        return false;
+bool update_pos(struct Drone* lista_drone, size_t id_drone, char* new_pos) {
+    struct Drone* temp = lista_drone;
+
+    while (temp != NULL) {
+        if (temp->id == id_drone) {
+            strcpy(temp->pos, new_pos);
+
+            return true;
+        }
+
+        temp = temp->next;
     }
 
-    if ((*lista_drone)->id == id_drone) {
-
-        return true;
-    }
-
-    update_pos(&(*lista_drone)->next, id_drone, new_pos);
+    return false;
 }
