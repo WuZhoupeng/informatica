@@ -12,7 +12,8 @@ struct Drone {
 
 void create (struct Drone** lista_drone, struct Drone* d);
 void read (struct Drone* lista_drone);
-bool update_pos(struct Drone* lista_drone, size_t id_drone, char* new_pos);
+bool update_pos (struct Drone* lista_drone, size_t id_drone, char* new_pos);
+bool delete (struct Drone** lista_drone, size_t id_drone);
 
 int main() {
     int opzione, temp;
@@ -63,15 +64,14 @@ void create (struct Drone** lista_drone, struct Drone* d) {
 
         return;
     }
-    else {
-        struct Drone* temp = *lista_drone;
 
-        while (temp->next != NULL) {
-            temp = temp->next;
-        }
+    struct Drone* temp = *lista_drone;
 
-        temp->next = d;
+    while (temp->next != NULL) {
+        temp = temp->next;
     }
+
+    temp->next = d;
 }
 
 void read (struct Drone* lista_drone) {
@@ -99,4 +99,37 @@ bool update_pos(struct Drone* lista_drone, size_t id_drone, char* new_pos) {
     }
 
     return false;
+}
+
+bool delete (struct Drone** lista_drone, size_t id_drone) {
+    if (*lista_drone == NULL) {
+
+        return false;
+    }
+
+    struct Drone* temp = *lista_drone;
+    struct Drone* free_d;
+
+    while (temp->next != NULL) {
+        if (temp->next != NULL) {
+            if (temp->next->id == id_drone) {
+                free_d = temp->next;
+
+                if (temp->next->next != NULL) {
+                    temp->next = temp->next->next;
+
+                    break;
+                }
+
+                temp->next = NULL;
+
+                break;
+            }
+        }
+
+        temp = temp->next;
+    }
+
+    free(free_d);
+    return true;
 }
