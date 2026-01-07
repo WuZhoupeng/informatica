@@ -26,10 +26,9 @@
       
       "ms-vscode-cpptools"
       "llvm-vs-code-extensions.vscode-clangd"
-
-      "FelixIcaza.andromeda" # Theme
       
       "PKief.material-icon-theme"
+      "johnpapa.winteriscoming"
     ];
     # Enable previews
     previews = {
