@@ -1,0 +1,43 @@
+div {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.result {
+    display: grid;
+    margin: 5rem 0 5rem 0;
+}
+
+button {
+    width: 5rem;
+}
+
+input {
+    width: 15rem;
+    margin-right: 1rem;
+}
+
+.not-visible {
+    display: none;
+}
+
+.color-black {
+    color: #000000;
+    font-size: 2rem;
+}
+
+.color-cyan {
+    color: #00FFFF;
+    font-size: 2rem;
+}
+
+.color-magenta {
+    color: #FF00FF;
+    font-size: 2rem;
+}
+
+.color-yellow {
+    color: #FFFF00;
+    font-size: 2rem;
+}
