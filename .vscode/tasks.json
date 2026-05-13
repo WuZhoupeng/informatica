@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build progetto C",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-std=c17", // Standard C
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}" // Output nella stessa cartella del file
+                // "${workspaceFolder}/main" // Eseguibile generato
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build progetto C - Thread",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-std=c17",
+                "-Wall",
+                "-Wextra",
+                "-g",
+                "-pthread",
+                "-D_POSIX_C_SOURCE=200809L",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        }
+    ]
+}
