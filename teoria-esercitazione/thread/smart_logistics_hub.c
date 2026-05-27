@@ -5,10 +5,11 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#define VEICOLI 500
-#define N_BAIE_CARICO 25
-#define K_VEICOLI 20
-#define LIMITE_CAMBIO_DIREZIONE 25
+
+#define VEICOLI 20
+#define N_BAIE_CARICO 3
+#define K_VEICOLI 3
+#define LIMITE_CAMBIO_DIREZIONE 3
 
 
 typedef long long id;
@@ -68,6 +69,9 @@ id add_stack_scarico_index = 0;
 id pop_stack_scarico_index = 0;
 Veicolo* stack_scarico[N_BAIE_CARICO] = {};
 
+id numero_veicoli;
+id numero_veicoli_usciti = 0;
+
 void workOperation (long ms);
 
 void* cycleActivity (void* args);
@@ -85,10 +89,16 @@ void waitTunnelEntry ();
 void waitTunnelExit ();
 void onVehiclePassed ();
 
+
+void barPercent ();
+
 int main (void) {
     srand(time(NULL));
 
-    pthread_t veicoli[VEICOLI];
+    printf("Inserisci quanti veicoli vuoi immetere: ");
+    scanf("%lld", &numero_veicoli);
+
+    pthread_t veicoli[numero_veicoli];
 
     if (sem_init(&full_tunnel, 0, K_VEICOLI) != 0) {
         printf("Errore nella creazione del semaforo!\n");
@@ -126,7 +136,7 @@ int main (void) {
         return 1;
     }
 
-    for (long long i = 0; i < VEICOLI; ++i) {
+    for (long long i = 0; i < numero_veicoli; ++i) {
         Categoria categoria = rand() % 2;
         Veicolo* veicolo = createVeicolo(i, categoria);
 
@@ -137,7 +147,7 @@ int main (void) {
         }
     }
 
-    for (long long i = 0; i < VEICOLI; ++i) pthread_join(veicoli[i], NULL);
+    for (long long i = 0; i < numero_veicoli; ++i) pthread_join(veicoli[i], NULL);
 
     sem_destroy(&full_tunnel);
     sem_destroy(&full_scarico);
@@ -264,6 +274,9 @@ void* cycleActivity (void* args) {
     printf("\n[INFO] Direzione di percorrenza: USCITA\n");
     printf("Veicolo %lld (%s) entra nell'uscita del tunnel!\n", veicolo->veicoloId, veicolo->categoria == STANDARD ? "standard" : "refrigerato");
     printf("[INFO] Veicoli nel tunnel: %lld\n\n", add_stack_tunnel_index - pop_stack_tunnel_index);
+
+    numero_veicoli_usciti++;
+    barPercent();
 
     pthread_mutex_unlock(&data_mutex);
 
@@ -393,4 +406,11 @@ void onVehiclePassed () {
     }
 
     pthread_mutex_unlock(&tunnel_mutex);
+}
+
+
+void barPercent () {
+    double percent = (double)numero_veicoli_usciti / (double)numero_veicoli * 100.0;
+
+    printf("%.2f% \n", percent);
 }
