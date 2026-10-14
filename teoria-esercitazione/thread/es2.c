@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
+#include <stdint.h>
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+const char global[] = "Tante parole dentro tante balle";
+int total = 0;
+
+void* counter (void* args);
+
+int main (void) {
+    pthread_t th1;
+    pthread_t th2;
+    pthread_t th3;
+    pthread_t th4;
+    pthread_t th5;
+
+    int* res1;
+    int* res2;
+    int* res3;
+    int* res4;
+    int* res5;
+
+    pthread_create(&th1, NULL, counter, (void*)(intptr_t) 0);
+    pthread_create(&th2, NULL, counter, (void*)(intptr_t) 1);
+    pthread_create(&th3, NULL, counter, (void*)(intptr_t) 2);
+    pthread_create(&th4, NULL, counter, (void*)(intptr_t) 3);
+    pthread_create(&th5, NULL, counter, (void*)(intptr_t) 4);
+
+    pthread_join(th1, (void**) &res1);
+    pthread_join(th2, (void**) &res2);
+    pthread_join(th3, (void**) &res3);
+    pthread_join(th4, (void**) &res4);
+    pthread_join(th5, (void**) &res5);
+
+    printf("Thread 1 = %d\n", *res1);
+    printf("Thread 2 = %d\n", *res2);
+    printf("Thread 3 = %d\n", *res3);
+    printf("Thread 4 = %d\n", *res4);
+    printf("Thread 5 = %d\n", *res5);
+    printf("Totale = %d\n", total);
+
+    return 0;
+}
+
+void* counter (void* args) {
+    intptr_t index = (intptr_t) args;
+    int a = 0;
+    size_t length = strlen(global);
+    const int NTHREADS = 5;
+
+    for (int i = index; i < length; i += NTHREADS) {
+        if (global[i] == 'e') {
+            pthread_mutex_lock(&mutex);
+            total++;
+            pthread_mutex_unlock(&mutex);
+            a++;
+        }
+    }
+
+    int* result = malloc(sizeof(int));
+    *result = a;
+
+    return (void*) result;
+}
