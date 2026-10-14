@@ -1,0 +1,82 @@
+﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Globalization;
+
+public class SynchronousSocketListener {
+    // Incoming data from the client.
+    public static string data = null;
+
+    public static void StartListening() {
+        // Data buffer for incoming data.
+        byte[] bytes = new Byte[1024];
+
+        // Establish the local endpoint for the socket.
+        // Dns.GetHostName returns the name of the
+        // host running the application.
+        IPAddress ipAddress = IPAddress.Any;
+        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5000);
+
+        // Create a TCP/IP socket.
+        Socket listener = new Socket(ipAddress.AddressFamily,
+            SocketType.Stream, ProtocolType.Tcp);
+
+        // Bind the socket to the local endpoint and
+        // listen for incoming connections.
+        try {
+            listener.Bind(localEndPoint);
+            listener.Listen(10);
+
+            // Start listening for connections.
+            while (true) {
+                Console.WriteLine("Waiting for a connection...");
+                // Program is suspended while waiting for an incoming connection.
+                Socket handler = listener.Accept();
+                data = "";
+
+                // An incoming connection needs to be processed
+                // ...with simply echo and then close
+                do {
+                    int bytesRec = handler.Receive(bytes);
+                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                } while (data.IndexOf('$') == -1);
+
+                data = data.Substring(0, data.IndexOf('$'));
+                Console.WriteLine("Kelvin ricevuti: {0}", data);
+
+                string response_data;
+
+                if (float.TryParse(data, NumberStyles.Float, CultureInfo.InvariantCulture, out float kelvin)) {
+                    float celsius = kelvin - 273.15f;
+                    response_data = celsius.ToString("F2", CultureInfo.InvariantCulture) + "$";
+                }
+                else {
+                    response_data = "Valore non valido$";
+                }
+
+                // Echo the data back to the client.
+                byte[] msg = Encoding.ASCII.GetBytes(response_data);
+
+                handler.Send(msg);
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+
+        Console.WriteLine("\nPress ENTER to continue...");
+        Console.Read();
+
+    }
+
+    public static int Main(String[] args)
+    {
+        StartListening();
+        return 0;
+    }
+}
